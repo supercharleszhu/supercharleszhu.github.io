@@ -30,7 +30,7 @@
 
   <!-- Begin Jekyll SEO tag v2.8.0 -->
 <meta name="generator" content="Jekyll v4.4.1" />
-<meta property="og:title" content="PyTorch Compile Deep Dive - From Python Function to Triton Kernel" />
+<meta property="og:title" content="Torch.compile Deep Dive - From Python Function to Triton Kernel" />
 <meta name="author" content="Charles Zhu" />
 <meta property="og:locale" content="en" />
 <meta name="description" content="An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis." />
@@ -39,17 +39,17 @@
 <meta property="og:url" content="http://localhost:4000/posts/00/" />
 <meta property="og:site_name" content="ZCache" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2024-12-18T18:00:00-08:00" />
+<meta property="article:published_time" content="2025-08-06T19:00:00-07:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="PyTorch Compile Deep Dive - From Python Function to Triton Kernel" />
+<meta property="twitter:title" content="Torch.compile Deep Dive - From Python Function to Triton Kernel" />
 <meta name="twitter:site" content="@supercharles" />
 <meta name="twitter:creator" content="@Charles Zhu" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Charles Zhu"},"dateModified":"2024-12-18T18:00:00-08:00","datePublished":"2024-12-18T18:00:00-08:00","description":"An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis.","headline":"PyTorch Compile Deep Dive - From Python Function to Triton Kernel","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/posts/00/"},"url":"http://localhost:4000/posts/00/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Charles Zhu"},"dateModified":"2025-08-06T19:00:00-07:00","datePublished":"2025-08-06T19:00:00-07:00","description":"An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis.","headline":"Torch.compile Deep Dive - From Python Function to Triton Kernel","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/posts/00/"},"url":"http://localhost:4000/posts/00/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
-  <title>PyTorch Compile Deep Dive - From Python Function to Triton Kernel | ZCache
+  <title>Torch.compile Deep Dive - From Python Function to Triton Kernel | ZCache
   </title>
 
   <!--
@@ -442,7 +442,7 @@
         
           
             
-              <span>PyTorch Compile Deep Dive - From Python Function to Triton Kernel</span>
+              <span>Torch.compile Deep Dive - From Python Function to Triton Kernel</span>
             
 
           
@@ -509,6 +509,81 @@
 
 
 
+
+  
+  
+
+  
+    
+      
+      
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+    
+    
+
+    
+      
+
+      
+      
+      
+
+      
+    
+      
+
+      
+      
+      
+
+      
+    
+
+    <!-- take out classes -->
+    
+
+    
+
+    
+    
+
+    
+
+    
+      
+    
+
+    <!-- lazy-load images -->
+    
+
+    
+      <!-- make sure the `<img>` is wrapped by `<a>` -->
+      
+
+      
+        <!-- create the image wrapper -->
+        
+
+        
+        
+      
+    
+
+    <!-- combine -->
+    
+  
+
+  
 
 
 <!-- Add header for code snippets -->
@@ -983,7 +1058,7 @@
 
 <article class="px-1" data-toc="true">
   <header>
-    <h1 data-toc-skip>PyTorch Compile Deep Dive - From Python Function to Triton Kernel</h1>
+    <h1 data-toc-skip>Torch.compile Deep Dive - From Python Function to Triton Kernel</h1>
     
       <p class="post-desc fw-light mb-4">An interactive deep dive into PyTorch's torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis.</p>
     
@@ -1002,13 +1077,13 @@
 
 <time
   
-  data-ts="1734573600"
+  data-ts="1754532000"
   data-df="ll"
   
     data-bs-toggle="tooltip" data-bs-placement="bottom"
   
 >
-  Dec 18, 2024
+  Aug  6, 2025
 </time>
 
       </span>
@@ -1060,7 +1135,7 @@
   class="readtime"
   data-bs-toggle="tooltip"
   data-bs-placement="bottom"
-  title="3295 words"
+  title="3354 words"
 >
   <em>18 min</em> read</span>
 
@@ -1071,7 +1146,7 @@
 
   
     <div id="toc-bar" class="d-flex align-items-center justify-content-between invisible">
-      <span class="label text-truncate">PyTorch Compile Deep Dive - From Python Function to Triton Kernel</span>
+      <span class="label text-truncate">Torch.compile Deep Dive - From Python Function to Triton Kernel</span>
       <button type="button" class="toc-trigger btn me-1">
         <i class="fa-solid fa-list-ul fa-fw"></i>
       </button>
@@ -1084,7 +1159,7 @@
 
     <dialog id="toc-popup" class="p-0">
       <div class="header d-flex flex-row align-items-center justify-content-between">
-        <div class="label text-truncate py-2 ms-4">PyTorch Compile Deep Dive - From Python Function to Triton Kernel</div>
+        <div class="label text-truncate py-2 ms-4">Torch.compile Deep Dive - From Python Function to Triton Kernel</div>
         <button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75">
           <i class="fas fa-close"></i>
         </button>
@@ -1094,7 +1169,7 @@
   
 
   <div class="content">
-    <h1 id="pytorch-compile-deep-dive-from-python-function-to-triton-kernel">PyTorch Compile Deep Dive: From Python Function to Triton Kernel</h1>
+    <h1 id="torchcompile-deep-dive-from-python-function-to-triton-kernel">Torch.compile Deep Dive: From Python Function to Triton Kernel</h1>
 
 <h2 id="introduction"><span class="me-2">Introduction</span><a href="#introduction" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2>
 
@@ -1126,21 +1201,26 @@
 
 <h3 id="what-is-torchdynamo"><span class="me-2">What is TorchDynamo?</span><a href="#what-is-torchdynamo" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3>
 
-<p>TorchDynamo is PyTorch’s graph capture mechanism that converts Python functions into computational graphs. It operates by:</p>
+<p>TorchDynamo is PyTorch’s graph capture mechanism that converts Python functions into computational graphs. It is hacking into the CPython’s compilation stage (<a href="https://docs.pytorch.org/docs/stable/torch.compiler_dynamo_deepdive.html#pep-523-adding-a-frame-evaluation-api-to-cpython">reference</a> and modify the bytecode to be actually executed.</p>
 
-<ol>
-  <li><strong>Bytecode Analysis</strong>: Dynamically analyzing Python bytecode</li>
-  <li><strong>Symbolic Execution</strong>: Tracking tensor operations symbolically</li>
-  <li><strong>Graph Construction</strong>: Building a computational graph representation</li>
-</ol>
+<p><a href="/assets/img/posts/dynamo.png" class="popup img-link shimmer"><img src="/assets/img/posts/dynamo.png" alt="TorchDynamo Architecture" loading="lazy"></a></p>
 
 <h3 id="-deep-dive-torchdynamos-internal-architecture"><span class="me-2">🔬 Deep Dive: TorchDynamo’s Internal Architecture</span><a href="#-deep-dive-torchdynamos-internal-architecture" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3>
 
-<p>Based on the PyTorch Dynamo codebase analysis, here’s how TorchDynamo actually works under the hood:</p>
+<p>Let’s dive deep into code base and check how it is tracing the program!</p>
 
-<h4 id="1-entry-point-and-frame-analysis"><span class="me-2"><strong>1. Entry Point and Frame Analysis</strong></span><a href="#1-entry-point-and-frame-analysis" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
+<h4 id="entry-point"><span class="me-2"><strong>Entry Point</strong></span><a href="#entry-point" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
+<p>An execution of a Python program roughly consists of three stages:</p>
 
-<p>The process starts in <code class="language-plaintext highlighter-rouge">convert_frame.py</code> when a function decorated with <code class="language-plaintext highlighter-rouge">@torch.compile</code> is called:</p>
+<ol>
+  <li>Initialization</li>
+  <li>Compilation</li>
+  <li>lInterpretation</li>
+</ol>
+
+<p>The dynamo analysis was actually hacking into compilation stage, and rewrite the bytecode to be executed. When there is no already compiled function, we start a fresh analysis and tracing from scratch.</p>
+
+<p>First step, it is using <code class="language-plaintext highlighter-rouge">dis</code> module to get the bytecode to be executed by CPython and run some initial cleanup of the Bytecode. You can check compiler <a href="https://github.com/python/cpython/blob/main/InternalDocs/compiler.md">here</a> on details of how it is generating the bytecode. Also <a href="https://tenthousandmeters.com/blog/python-behind-the-scenes-1-how-the-cpython-vm-works/">here</a> is a great blog sharing how CPython is compiling and interpreting a python program</p>
 
 <div class="language-python highlighter-rouge"><div class="code-header">
         <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
@@ -1150,46 +1230,15 @@
 4
 5
 6
-</pre></td><td class="rouge-code"><pre><span class="c1"># From convert_frame.py
-</span><span class="k">def</span> <span class="nf">convert_frame_assert</span><span class="p">(</span><span class="n">compiler_fn</span><span class="p">,</span> <span class="n">one_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">export</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">cache_entry</span><span class="p">,</span> <span class="n">hooks</span><span class="p">,</span> <span class="n">frame_state</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="c1"># Frame Detection: Dynamo intercepts Python function calls
-</span>        <span class="c1"># Bytecode Extraction: Extract function's bytecode using dis module
-</span>        <span class="c1"># Initial Checks: Check if frame contains tensors and worth compiling
+</pre></td><td class="rouge-code"><pre><span class="c1"># torch version: 2.5.1+cu126
+</span>
+<span class="c1"># From bytecode_transformation.py
+</span><span class="k">def</span> <span class="nf">cleaned_instructions</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Instruction</span><span class="p">]:</span>
+    <span class="n">instructions</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="nf">map</span><span class="p">(</span><span class="n">convert_instruction</span><span class="p">,</span> <span class="n">dis</span><span class="p">.</span><span class="nf">get_instructions</span><span class="p">(</span><span class="n">code</span><span class="p">)))</span>
+    <span class="c1"># rest part are omitted
 </span></pre></td></tr></tbody></table></code></div></div>
 
-<h4 id="2-bytecode-analysis-and-transformation"><span class="me-2"><strong>2. Bytecode Analysis and Transformation</strong></span><a href="#2-bytecode-analysis-and-transformation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
-
-<p>TorchDynamo performs sophisticated bytecode analysis:</p>
-
-<div class="language-python highlighter-rouge"><div class="code-header">
-        <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
-      <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="rouge-code"><pre><span class="c1"># From convert_frame.py
-</span><span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="n">instructions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Instruction</span><span class="p">],</span> <span class="n">code_options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
-    <span class="c1"># Remove dead code and pointless jumps
-</span>    <span class="n">instructions</span><span class="p">[:]</span> <span class="o">=</span> <span class="nf">remove_dead_code</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
-    <span class="n">instructions</span><span class="p">[:]</span> <span class="o">=</span> <span class="nf">remove_pointless_jumps</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
-    
-    <span class="c1"># Process exception tables for Python 3.11+
-</span>    <span class="nf">propagate_inst_exn_table_entries</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
-</pre></td></tr></tbody></table></code></div></div>
-
-<p><strong>Key Transformations:</strong></p>
-<ul>
-  <li><strong>Dead Code Elimination</strong>: Removes unreachable instructions</li>
-  <li><strong>Jump Optimization</strong>: Simplifies control flow</li>
-  <li><strong>Exception Table Processing</strong>: Handles try/except blocks for Python 3.11+</li>
-</ul>
-
-<h4 id="3-symbolic-execution-engine"><span class="me-2"><strong>3. Symbolic Execution Engine</strong></span><a href="#3-symbolic-execution-engine" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
+<h4 id="symbolic-execution-engine"><span class="me-2"><strong>Symbolic Execution Engine</strong></span><a href="#symbolic-execution-engine" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
 
 <p>The core tracing happens in <code class="language-plaintext highlighter-rouge">symbolic_convert.py</code> through the <code class="language-plaintext highlighter-rouge">InstructionTranslator</code> class:</p>
 
@@ -1408,6 +1457,37 @@
   <li><strong>Type Guards</strong>: Ensure tensor dtypes are consistent</li>
   <li><strong>Value Guards</strong>: Ensure constant values match</li>
   <li><strong>Global Guards</strong>: Track changes to global state</li>
+</ul>
+
+<h4 id="post-processing"><span class="me-2"><strong>Post Processing</strong></span><a href="#post-processing" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
+
+<p>Instead of directly letting CPython executing the bytecode, TorchDynamo runs a tracer via</p>
+
+<div class="language-python highlighter-rouge"><div class="code-header">
+        <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
+      <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="c1"># From convert_frame.py
+</span><span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="n">instructions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Instruction</span><span class="p">],</span> <span class="n">code_options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="c1"># Remove dead code and pointless jumps
+</span>    <span class="n">instructions</span><span class="p">[:]</span> <span class="o">=</span> <span class="nf">remove_dead_code</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
+    <span class="n">instructions</span><span class="p">[:]</span> <span class="o">=</span> <span class="nf">remove_pointless_jumps</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
+    
+    <span class="c1"># Process exception tables for Python 3.11+
+</span>    <span class="nf">propagate_inst_exn_table_entries</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></div></div>
+
+<p><strong>Key Transformations:</strong></p>
+<ul>
+  <li><strong>Dead Code Elimination</strong>: Removes unreachable instructions</li>
+  <li><strong>Jump Optimization</strong>: Simplifies control flow</li>
+  <li><strong>Exception Table Processing</strong>: Handles try/except blocks for Python 3.11+</li>
 </ul>
 
 <h3 id="interactive-example-lets-trace-a-function"><span class="me-2">Interactive Example: Let’s Trace a Function</span><a href="#interactive-example-lets-trace-a-function" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3>
@@ -2616,21 +2696,21 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 
       
 
-      <a href="https://twitter.com/intent/tweet?text=PyTorch%20Compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter">
+      <a href="https://twitter.com/intent/tweet?text=Torch.compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter">
         <i class="fa-fw fa-brands fa-square-x-twitter"></i>
       </a>
     
 
       
 
-      <a href="https://www.facebook.com/sharer/sharer.php?title=PyTorch%20Compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&u=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+      <a href="https://www.facebook.com/sharer/sharer.php?title=Torch.compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&u=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
         <i class="fa-fw fab fa-facebook-square"></i>
       </a>
     
 
       
 
-      <a href="https://t.me/share/url?url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F&text=PyTorch%20Compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
+      <a href="https://t.me/share/url?url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F00%2F&text=Torch.compile%20Deep%20Dive%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
         <i class="fa-fw fab fa-telegram"></i>
       </a>
     
@@ -2685,7 +2765,7 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
         
         
         <li class="text-truncate lh-lg">
-          <a href="/posts/00/">PyTorch Compile Deep Dive - From Python Function to Triton Kernel</a>
+          <a href="/posts/00/">Torch.compile Deep Dive - From Python Function to Triton Kernel</a>
         </li>
       
     </ul>
