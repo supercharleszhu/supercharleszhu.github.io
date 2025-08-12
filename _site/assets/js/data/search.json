@@ -1,7 +1,7 @@
 [
   
   {
-    "title": "Torch.compile Deep Dive - From Python Function to Triton Kernel",
+    "title": "Torch.compile 101 - From Python Function to Triton Kernel",
     "url": "/posts/00/",
     "categories": "Machine Learning, PyTorch",
     "tags": "pytorch, torch.compile, triton, optimization, deep-learning",
