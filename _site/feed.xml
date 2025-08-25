@@ -4,7 +4,7 @@
   <id>http://localhost:4000/</id>
   <title>ZCache</title>
   <subtitle>A minimal, responsive and feature-rich Jekyll theme for technical writing.</subtitle>
-  <updated>2025-08-11T18:30:57-07:00</updated>
+  <updated>2025-08-25T09:34:33-07:00</updated>
   <author>
     <name>supercharles</name>
     <uri>http://localhost:4000/</uri>
@@ -20,11 +20,37 @@
 
   
   <entry>
+    <title>From FlashAttention to FlashAttention 2</title>
+    <link href="http://localhost:4000/posts/00/" rel="alternate" type="text/html" title="From FlashAttention to FlashAttention 2" />
+    <published>2025-08-13T19:00:00-07:00</published>
+  
+    <updated>2025-08-13T19:00:00-07:00</updated>
+  
+    <id>http://localhost:4000/posts/00/</id>
+    <content type="text/html" src="http://localhost:4000/posts/00/" />
+    <author>
+      <name>Charles Zhu</name>
+    </author>
+
+  
+    
+    <category term="Machine Learning" />
+    
+    <category term="PyTorch" />
+    
+  
+
+  <summary>Deep dive into FlashAttention 2</summary>
+
+  </entry>
+
+  
+  <entry>
     <title>Torch.compile 101 - From Python Function to Triton Kernel</title>
     <link href="http://localhost:4000/posts/00/" rel="alternate" type="text/html" title="Torch.compile 101 - From Python Function to Triton Kernel" />
     <published>2025-08-06T19:00:00-07:00</published>
   
-    <updated>2025-08-07T17:02:08-07:00</updated>
+    <updated>2025-08-25T09:33:10-07:00</updated>
   
     <id>http://localhost:4000/posts/00/</id>
     <content type="text/html" src="http://localhost:4000/posts/00/" />

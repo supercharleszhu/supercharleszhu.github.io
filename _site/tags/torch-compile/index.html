@@ -14,7 +14,7 @@
 
 
 <!-- `site.alt_lang` can specify a language different from the UI -->
-<html lang="en" >
+<html lang="en" data-mode="light">
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7">
@@ -270,14 +270,6 @@
 
   <div class="sidebar-bottom d-flex flex-wrap  align-items-center w-100">
     
-      <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle">
-        <i class="fas fa-adjust"></i>
-      </button>
-
-      
-        <span class="icon-border"></span>
-      
-    
 
     
       
@@ -451,9 +443,33 @@
   <h1 class="ps-lg-2">
     <i class="fa fa-tag fa-fw text-muted"></i>
     torch.compile
-    <span class="lead text-muted ps-2">1</span>
+    <span class="lead text-muted ps-2">2</span>
   </h1>
   <ul class="content ps-0">
+    
+      <li class="d-flex justify-content-between px-md-3">
+        <a href="/posts/00/">From FlashAttention to FlashAttention 2</a>
+        <span class="dash flex-grow-1"></span>
+        <!--
+  Date format snippet
+  See: ${JS_ROOT}/utils/locale-dateime.js
+-->
+
+
+
+
+<time
+  
+    class="text-muted small text-nowrap"
+  
+  data-ts="1755136800"
+  data-df="ll"
+  
+>
+  Aug 13, 2025
+</time>
+
+      </li>
     
       <li class="d-flex justify-content-between px-md-3">
         <a href="/posts/00/">Torch.compile 101 - From Python Function to Triton Kernel</a>
@@ -515,6 +531,13 @@
         
         <li class="text-truncate lh-lg">
           <a href="/posts/00/">Torch.compile 101 - From Python Function to Triton Kernel</a>
+        </li>
+      
+        
+        
+        
+        <li class="text-truncate lh-lg">
+          <a href="/posts/00/">From FlashAttention to FlashAttention 2</a>
         </li>
       
     </ul>
