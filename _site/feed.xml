@@ -1,17 +1,17 @@
 
 
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <id>http://localhost:4000/</id>
+  <id>https://supercharles.github.io/</id>
   <title>ZCache</title>
   <subtitle>A minimal, responsive and feature-rich Jekyll theme for technical writing.</subtitle>
-  <updated>2025-09-08T12:52:33-07:00</updated>
+  <updated>2025-09-08T17:53:50-07:00</updated>
   <author>
     <name>supercharles</name>
-    <uri>http://localhost:4000/</uri>
+    <uri>https://supercharles.github.io/</uri>
   </author>
-  <link rel="self" type="application/atom+xml" href="http://localhost:4000/feed.xml"/>
+  <link rel="self" type="application/atom+xml" href="https://supercharles.github.io/feed.xml"/>
   <link rel="alternate" type="text/html" hreflang="en"
-    href="http://localhost:4000/"/>
+    href="https://supercharles.github.io/"/>
   <generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator>
   <rights> © 2025 supercharles </rights>
   <icon>/assets/img/favicons/favicon.ico</icon>
@@ -21,13 +21,13 @@
   
   <entry>
     <title>From FlashAttention to FlashAttention 2</title>
-    <link href="http://localhost:4000/posts/00/" rel="alternate" type="text/html" title="From FlashAttention to FlashAttention 2" />
+    <link href="https://supercharles.github.io/posts/2025-08-13-00/" rel="alternate" type="text/html" title="From FlashAttention to FlashAttention 2" />
     <published>2025-08-13T19:00:00-07:00</published>
   
     <updated>2025-08-13T19:00:00-07:00</updated>
   
-    <id>http://localhost:4000/posts/00/</id>
-    <content type="text/html" src="http://localhost:4000/posts/00/" />
+    <id>https://supercharles.github.io/posts/2025-08-13-00/</id>
+    <content type="text/html" src="https://supercharles.github.io/posts/2025-08-13-00/" />
     <author>
       <name>Charles Zhu</name>
     </author>
@@ -47,13 +47,13 @@
   
   <entry>
     <title>Torch.compile 101 - From Python Function to Triton Kernel</title>
-    <link href="http://localhost:4000/posts/00/" rel="alternate" type="text/html" title="Torch.compile 101 - From Python Function to Triton Kernel" />
+    <link href="https://supercharles.github.io/posts/2025-08-06-00/" rel="alternate" type="text/html" title="Torch.compile 101 - From Python Function to Triton Kernel" />
     <published>2025-08-06T19:00:00-07:00</published>
   
     <updated>2025-08-25T09:33:10-07:00</updated>
   
-    <id>http://localhost:4000/posts/00/</id>
-    <content type="text/html" src="http://localhost:4000/posts/00/" />
+    <id>https://supercharles.github.io/posts/2025-08-06-00/</id>
+    <content type="text/html" src="https://supercharles.github.io/posts/2025-08-06-00/" />
     <author>
       <name>Charles Zhu</name>
     </author>

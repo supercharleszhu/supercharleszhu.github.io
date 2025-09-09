@@ -2,7 +2,7 @@
   
   {
     "title": "From FlashAttention to FlashAttention 2",
-    "url": "/posts/00/",
+    "url": "/posts/2025-08-13-00/",
     "categories": "Machine Learning, PyTorch",
     "tags": "pytorch, torch.compile, triton, optimization, deep-learning",
     "date": "2025-08-13 19:00:00 -0700",
@@ -11,7 +11,7 @@
   
   {
     "title": "Torch.compile 101 - From Python Function to Triton Kernel",
-    "url": "/posts/00/",
+    "url": "/posts/2025-08-06-00/",
     "categories": "Machine Learning, PyTorch",
     "tags": "pytorch, torch.compile, triton, optimization, deep-learning",
     "date": "2025-08-06 19:00:00 -0700",
