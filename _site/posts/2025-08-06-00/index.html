@@ -35,8 +35,8 @@
 <meta property="og:locale" content="en" />
 <meta name="description" content="An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis." />
 <meta property="og:description" content="An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis." />
-<link rel="canonical" href="https://supercharles.github.io/posts/2025-08-06-00/" />
-<meta property="og:url" content="https://supercharles.github.io/posts/2025-08-06-00/" />
+<link rel="canonical" href="http://localhost:4000/posts/2025-08-06-00/" />
+<meta property="og:url" content="http://localhost:4000/posts/2025-08-06-00/" />
 <meta property="og:site_name" content="ZCache" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-08-06T19:00:00-07:00" />
@@ -45,7 +45,7 @@
 <meta name="twitter:site" content="@supercharles" />
 <meta name="twitter:creator" content="@Charles Zhu" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Charles Zhu"},"dateModified":"2025-08-25T09:33:10-07:00","datePublished":"2025-08-06T19:00:00-07:00","description":"An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis.","headline":"Torch.compile 101 - From Python Function to Triton Kernel","mainEntityOfPage":{"@type":"WebPage","@id":"https://supercharles.github.io/posts/2025-08-06-00/"},"url":"https://supercharles.github.io/posts/2025-08-06-00/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Charles Zhu"},"dateModified":"2025-09-08T17:56:54-07:00","datePublished":"2025-08-06T19:00:00-07:00","description":"An interactive deep dive into PyTorch’s torch.compile system, tracing the journey from Python functions to optimized Triton kernels with hands-on examples and performance analysis.","headline":"Torch.compile 101 - From Python Function to Triton Kernel","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/posts/2025-08-06-00/"},"url":"http://localhost:4000/posts/2025-08-06-00/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -1090,13 +1090,13 @@
 
 <time
   
-  data-ts="1756139590"
+  data-ts="1757379414"
   data-df="ll"
   
     data-bs-toggle="tooltip" data-bs-placement="bottom"
   
 >
-  Aug 25, 2025
+  Sep  8, 2025
 </time>
 
         </span>
@@ -1146,9 +1146,9 @@
   class="readtime"
   data-bs-toggle="tooltip"
   data-bs-placement="bottom"
-  title="3434 words"
+  title="3624 words"
 >
-  <em>19 min</em> read</span>
+  <em>20 min</em> read</span>
 
         </div>
       </div>
@@ -1291,7 +1291,7 @@
 18
 </pre></td><td class="rouge-code"><pre><span class="nb">echo</span> <span class="s2">"Setting up environment variables for PyTorch Compile debugging..."</span>
 <span class="nb">export </span><span class="nv">TORCH_COMPILE_DEBUG</span><span class="o">=</span>1
-<span class="nb">export </span><span class="nv">TORCH_LOGS</span><span class="o">=</span>+dynamo,+inductor
+<span class="nb">export </span><span class="nv">TORCH_LOGS</span><span class="o">=</span>+dynamo,+inductor,guard,recompile,aot
 
 <span class="nb">echo</span> <span class="s2">"Environment variables set:"</span>
 <span class="nb">echo</span> <span class="s2">"TORCH_COMPILE_DEBUG=</span><span class="nv">$TORCH_COMPILE_DEBUG</span><span class="s2">"</span>
@@ -1516,7 +1516,7 @@ python trace_example.py
 </span></pre></td></tr></tbody></table></code></div></div>
 <h4 id="guard-generation"><span class="me-2"><strong>Guard Generation</strong></span><a href="#guard-generation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
 
-<p>When building up the graph, the VariableTracker generates comprehensive <a href="https://github.com/pytorch/pytorch/blob/ed77e23b6808065c927e626f471d5bf588dd2cc2/torch/_guards.py#L246">guards</a> to ensure correctness:</p>
+<p>When building up the graph, the VariableTracker generates comprehensive <a href="https://github.com/pytorch/pytorch/blob/ed77e23b6808065c927e626f471d5bf588dd2cc2/torch/_guards.py#L246">guards</a> to make sure the pre-condition matches when we want to reuse an already compiled function</p>
 
 <div class="language-python highlighter-rouge"><div class="code-header">
         <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
@@ -1524,20 +1524,58 @@ python trace_example.py
 2
 3
 4
-</pre></td><td class="rouge-code"><pre><span class="c1"># From guards.py
+</pre></td><td class="rouge-code"><pre><span class="c1"># From torch/_dyanmo/guards.py
 </span><span class="k">def</span> <span class="nf">install_guard</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">guard_fn</span><span class="p">):</span>
     <span class="c1"># Install guards for tensor shapes, types, and values
 </span>    <span class="c1"># Guards ensure graph validity across different inputs
 </span></pre></td></tr></tbody></table></code></div></div>
 
-<p><strong>Guard Types:</strong></p>
-<ul>
-  <li><strong>Shape Guards</strong>: Ensure tensor dimensions match</li>
-  <li><strong>Type Guards</strong>: Ensure tensor dtypes are consistent</li>
-  <li><strong>Value Guards</strong>: Ensure constant values match</li>
-  <li><strong>Global Guards</strong>: Track changes to global state</li>
-</ul>
+<p>Guards are validated before we call a compiled function. It is implemented in cpp (<a href="https://github.com/pytorch/pytorch/blob/e025c0f45945eac2ece9091cc7c0c5f784b2b172/torch/csrc/dynamo/guards.cpp#L1704">guard.cpp</a>) to provide better performance</p>
+<div class="language-cpp highlighter-rouge"><div class="code-header">
+        <span data-label-text="Cpp"><i class="fas fa-code fa-fw small"></i></span>
+      <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="c1">// example guard to validate tensor type match</span>
+<span class="k">class</span> <span class="nc">TYPE_MATCH</span> <span class="o">:</span> <span class="k">public</span> <span class="n">LeafGuard</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="c1">// type_id = id(type(obj))</span>
+  <span class="n">TYPE_MATCH</span><span class="p">(</span>
+      <span class="n">RootGuardManager</span><span class="o">*</span> <span class="n">root_guard_manager</span><span class="p">,</span>
+      <span class="n">py</span><span class="o">::</span><span class="n">object</span> <span class="n">type_id</span><span class="p">,</span>
+      <span class="n">py</span><span class="o">::</span><span class="n">object</span> <span class="n">verbose_code_parts</span><span class="p">)</span>
+      <span class="o">:</span> <span class="n">LeafGuard</span><span class="p">(</span><span class="n">root_guard_manager</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">verbose_code_parts</span><span class="p">)),</span>
+        <span class="n">_expected</span><span class="p">(</span><span class="n">py</span><span class="o">::</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">intptr_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">type_id</span><span class="p">)))</span> <span class="p">{}</span>
 
+  <span class="kt">bool</span> <span class="n">check_nopybind</span><span class="p">(</span><span class="n">PyObject</span><span class="o">*</span> <span class="n">value</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span> <span class="c1">// borrowed ref</span>
+    <span class="c1">// NOLINTNEXTLINE(performance-no-int-to-ptr)</span>
+    <span class="k">return</span> <span class="n">Py_TYPE</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">_expected</span><span class="p">;</span>
+  <span class="p">}</span>
+
+ <span class="k">private</span><span class="o">:</span>
+  <span class="c1">// id of the type of the original object.</span>
+  <span class="kt">intptr_t</span> <span class="n">_expected</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></div></div>
+
+<p>See more details on how <a href="https://torchcompile-guards.hashnode.dev/inside-torchcompile-guards-how-they-work-what-they-cost-and-ways-to-optimize#heading-runtime-cost-how-to-reduce-guard-overhead">guard</a> was implemented efficiently.</p>
 <h4 id="graph-break-handling"><span class="me-2"><strong>Graph Break Handling</strong></span><a href="#graph-break-handling" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
 
 <p>When TorchDynamo encounters unsupported operations, it creates graph breaks:</p>
@@ -1690,7 +1728,7 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 </pre></td></tr></tbody></table></code></div></div>
 <h4 id="aotautograd"><span class="me-2">AOTAutograd</span><a href="#aotautograd" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
 
-<p>The <code class="language-plaintext highlighter-rouge">AOTAutograd</code> will basically help capturing backward graph if there are inputs that requires to capture gradient ahead of time.</p>
+<p>The <code class="language-plaintext highlighter-rouge">AOTAutograd</code> will basically help capturing backward graph if there are inputs that requires to capture gradient ahead of time (dispatcher <a href="https://github.com/pytorch/pytorch/blob/25f1a5d8d13f404d7e08d64efce9aa6c411ee143/torch/_functorch/aot_autograd.py#L543">code</a>) (runtime <a href="https://github.com/pytorch/pytorch/blob/5b9114bf197d1db32cc1cfe06f66e2b4a02f55b1/torch/_functorch/_aot_autograd/runtime_wrappers.py#L2070">wrapper</a> to generate final function with compiled fw and bw).</p>
 
 <p>Note: This module is not only embedded within Torchinductor, it is also used by torch.export, and can be the entry point of <a href="https://docs.pytorch.org/docs/stable/torch.compiler_custom_backends.html#custom-backends-after-aotautograd">custom compiler backend</a>.</p>
 
@@ -1803,7 +1841,7 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 </span>
 </pre></td></tr></tbody></table></code></div></div>
 
-<p>Note 1: when generating the joint graph, internally it is calling <code class="language-plaintext highlighter-rouge">aot_dispatch_autograd_graph</code></p>
+<p>when generating the joint graph, internally it is calling <code class="language-plaintext highlighter-rouge">aot_dispatch_autograd_graph</code></p>
 
 <div class="language-python highlighter-rouge"><div class="code-header">
         <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
@@ -1815,8 +1853,6 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 6
 7
 8
-9
-10
 </pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">aot_dispatch_autograd_graph</span><span class="p">(..):</span>
     <span class="c1">#...
 </span>    <span class="n">joint_fn_to_trace</span><span class="p">,</span> <span class="n">updated_joint_inputs</span> <span class="o">=</span> <span class="nf">create_functionalized_fn</span><span class="p">(</span>
@@ -1825,10 +1861,10 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 </span>    <span class="c1">#...
 </span>    <span class="n">fx_g</span> <span class="o">=</span> <span class="nf">_create_graph</span><span class="p">(</span><span class="n">joint_fn_to_trace</span><span class="p">,</span> <span class="n">updated_joint_inputs</span><span class="p">,</span> <span class="n">aot_config</span><span class="o">=</span><span class="n">aot_config</span><span class="p">)</span> <span class="c1"># this will create the joint graph, and will run "decomposition" to lower into a smaller set of supported operation
 </span>    
-
-
 </pre></td></tr></tbody></table></code></div></div>
-<p>Note 2: the “<code class="language-plaintext highlighter-rouge">decomposition</code>” is run in AOTAutograd as well, while all of the decomposition is registered in <code class="language-plaintext highlighter-rouge">torch/_decom/decomposition.py</code> (we should be able to register our own decomposition as well):</p>
+<p>And internally it is running the fx graph and call fake mode of eager <a href="https://github.com/pytorch/pytorch/blob/814338826e0b5cd065f8278c4b9487f13e16a5c7/torch/_functorch/_aot_autograd/graph_capture_wrappers.py#L396">autograd</a> (see details in <a href="https://docs.pytorch.org/docs/stable/autograd.html">here</a>)</p>
+
+<p>the “<code class="language-plaintext highlighter-rouge">decomposition</code>” is run in AOTAutograd as well, while all of the decomposition is registered in <code class="language-plaintext highlighter-rouge">torch/_decom/decomposition.py</code> (we should be able to register our own decomposition as well):</p>
 <div class="language-python highlighter-rouge"><div class="code-header">
         <span data-label-text="Python"><i class="fas fa-code fa-fw small"></i></span>
       <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -1851,8 +1887,13 @@ find torch_compile_debug/run_<span class="k">*</span>/torchinductor/<span class=
 
 </pre></td></tr></tbody></table></code></div></div>
 
+<p>Note: <a href="https://github.com/pytorch/pytorch/blob/ee53ad2dd0a864cd331241cd3c4e131da1ceb868/torch/fx/_utils.py#L9">Here</a> is a great debug point to showcase the when the graph is generated;
+Note: <a href="https://github.com/pytorch/pytorch/blob/167ad09be5af5c52666759412a3804068c6955d1/torch/_functorch/partitioners.py#L2890">API: functorch.compile.draw_graph(graph_module)</a> can be used to draw visualized diagram of the graph</p>
+
+<p>The Joint fw+bw graph will be <a href="https://github.com/pytorch/pytorch/blob/167ad09be5af5c52666759412a3804068c6955d1/torch/_functorch/partitioners.py#L2683">partitioned</a> into forward and backward graph separately via max-flow / min-cut algorithm, which is targeting at minimize the tensor being saved for backward passes. See more <a href="https://dev-discuss.pytorch.org/t/min-cut-optimal-recomputation-i-e-activation-checkpointing-with-aotautograd/467">details</a> in this explanation. (<a href="https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm">reference</a> of Ford–Fulkerson Algorithm)</p>
+
 <h4 id="defined-by-run-ir"><span class="me-2">Defined-by-run IR</span><a href="#defined-by-run-ir" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h4>
-<p>After that, it will generate a <code class="language-plaintext highlighter-rouge">lowered defined-by-run IR</code> for TorchInductor. These IR will have the layout
+<p>After forward and backward graph is generated, it will generate a <code class="language-plaintext highlighter-rouge">lowered defined-by-run IR</code> for TorchInductor. These IR will have the layout
 information to execute the graph</p>
 
 <div class="language-python highlighter-rouge"><div class="code-header">
@@ -2520,21 +2561,21 @@ class op2_loop_body:
 
       
 
-      <a href="https://twitter.com/intent/tweet?text=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&url=https%3A%2F%2Fsupercharles.github.io%2Fposts%2F2025-08-06-00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter">
+      <a href="https://twitter.com/intent/tweet?text=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F2025-08-06-00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter">
         <i class="fa-fw fa-brands fa-square-x-twitter"></i>
       </a>
     
 
       
 
-      <a href="https://www.facebook.com/sharer/sharer.php?title=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&u=https%3A%2F%2Fsupercharles.github.io%2Fposts%2F2025-08-06-00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+      <a href="https://www.facebook.com/sharer/sharer.php?title=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache&u=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F2025-08-06-00%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
         <i class="fa-fw fab fa-facebook-square"></i>
       </a>
     
 
       
 
-      <a href="https://t.me/share/url?url=https%3A%2F%2Fsupercharles.github.io%2Fposts%2F2025-08-06-00%2F&text=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
+      <a href="https://t.me/share/url?url=http%3A%2F%2Flocalhost%3A4000%2Fposts%2F2025-08-06-00%2F&text=Torch.compile%20101%20-%20From%20Python%20Function%20to%20Triton%20Kernel%20-%20ZCache" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
         <i class="fa-fw fab fa-telegram"></i>
       </a>
     
