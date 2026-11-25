@@ -94,13 +94,13 @@
   <text x="565" y="313" text-anchor="middle" class="block">PV0[j+1]</text>
   <text x="565" y="334" text-anchor="middle" class="block-small">GEMM1</text>
 
-  <rect x="895" y="285" width="145" height="64" rx="13" fill="url(#wg0Fill)" filter="url(#shadow)"/>
-  <text x="967" y="313" text-anchor="middle" class="block">QK0[j-1]</text>
-  <text x="967" y="334" text-anchor="middle" class="block-small">next GEMM0</text>
+  <rect x="960" y="285" width="130" height="64" rx="13" fill="url(#wg0Fill)" filter="url(#shadow)"/>
+  <text x="1025" y="313" text-anchor="middle" class="block">QK0[j-1]</text>
+  <text x="1025" y="334" text-anchor="middle" class="block-small">next GEMM0</text>
 
-  <rect x="1050" y="285" width="145" height="64" rx="13" fill="url(#wg0Fill)" filter="url(#shadow)"/>
-  <text x="1122" y="313" text-anchor="middle" class="block">PV0[j]</text>
-  <text x="1122" y="334" text-anchor="middle" class="block-small">next GEMM1</text>
+  <rect x="1100" y="285" width="140" height="64" rx="13" fill="url(#wg0Fill)" filter="url(#shadow)"/>
+  <text x="1170" y="313" text-anchor="middle" class="block">PV0[j]</text>
+  <text x="1170" y="334" text-anchor="middle" class="block-small">next GEMM1</text>
 
   <text x="55" y="423" class="lane">WG0 CUDA/SFU</text>
   <text x="55" y="445" class="lane-sub">complete score epilogue</text>
@@ -123,9 +123,9 @@
   <text x="865" y="534" text-anchor="middle" class="block">PV1[j+1]</text>
   <text x="865" y="555" text-anchor="middle" class="block-small">GEMM1</text>
 
-  <rect x="1205" y="506" width="115" height="64" rx="13" fill="url(#wg1Fill)" filter="url(#shadow)"/>
-  <text x="1262" y="534" text-anchor="middle" class="block">QK1[j-1]</text>
-  <text x="1262" y="555" text-anchor="middle" class="block-small">next</text>
+  <rect x="1250" y="506" width="120" height="64" rx="13" fill="url(#wg1Fill)" filter="url(#shadow)"/>
+  <text x="1310" y="534" text-anchor="middle" class="block">QK1[j-1]</text>
+  <text x="1310" y="555" text-anchor="middle" class="block-small">next GEMM0</text>
 
   <text x="55" y="649" class="lane">WG1 CUDA/SFU</text>
   <text x="55" y="671" class="lane-sub">complete score epilogue</text>
@@ -136,13 +136,13 @@
   <text x="1142" y="659" text-anchor="middle" class="block-small">mask | rowmax | alpha | rescale row_sum</text>
   <text x="1142" y="681" text-anchor="middle" class="block-small">exp | add row_sum | rescale O | prepare P1[j]</text>
 
-  <path d="M 640 317 C 675 340, 675 470, 700 500" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#barrierArrow)"/>
+  <path d="M 640 317 C 700 365, 600 470, 646 532" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#barrierArrow)"/>
   <rect x="624" y="371" width="157" height="31" rx="15" fill="#fee2e2" stroke="#fecaca"/>
   <text x="702" y="392" text-anchor="middle" class="tiny" fill="#991b1b">token: WG0 to WG1</text>
 
-  <path d="M 940 538 C 1000 520, 1000 390, 1040 350" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#barrierArrow)"/>
-  <rect x="968" y="455" width="157" height="31" rx="15" fill="#fee2e2" stroke="#fecaca"/>
-  <text x="1046" y="476" text-anchor="middle" class="tiny" fill="#991b1b">token: WG1 to WG0</text>
+  <path d="M 940 538 C 1010 500, 900 400, 956 326" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#barrierArrow)"/>
+  <rect x="900" y="455" width="157" height="31" rx="15" fill="#fee2e2" stroke="#fecaca"/>
+  <text x="978" y="476" text-anchor="middle" class="tiny" fill="#991b1b">token: WG1 to WG0</text>
 
   <rect x="55" y="752" width="1290" height="105" rx="17" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
   <text x="80" y="782" class="note">What overlaps</text>
