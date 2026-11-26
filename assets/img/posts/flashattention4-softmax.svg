@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="800" viewBox="0 0 1400 800" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-4 online softmax and lazy output rescale</title>
+  <desc id="desc">Scores are read from tensor memory, row maxima and exponentials are computed, probabilities are written back, and correction warps rescale output only when the row maximum changed enough.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.dark{font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="800" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Online softmax separates probability production from O correction</text>
+  <text x="60" y="88" class="sub">Softmax warps update row statistics and P; correction warps rescale the persistent output accumulator in TMEM.</text>
+
+  <rect x="70" y="160" width="185" height="95" rx="16" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="162" y="198" text-anchor="middle" class="head">load S</text><text x="162" y="225" text-anchor="middle" class="small">TMEM → registers</text>
+  <line x1="255" y1="208" x2="315" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="325" y="160" width="210" height="95" rx="16" fill="#7c3aed" filter="url(#shadow)"/>
+  <text x="430" y="198" text-anchor="middle" class="head">mask + row max</text><text x="430" y="225" text-anchor="middle" class="small">derive alpha</text>
+  <line x1="535" y1="208" x2="595" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="605" y="160" width="210" height="95" rx="16" fill="#ea580c" filter="url(#shadow)"/>
+  <text x="710" y="198" text-anchor="middle" class="head">subtract + exp2</text><text x="710" y="225" text-anchor="middle" class="small">hardware or polynomial</text>
+  <line x1="815" y1="208" x2="875" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="885" y="160" width="210" height="95" rx="16" fill="#c2410c" filter="url(#shadow)"/>
+  <text x="990" y="198" text-anchor="middle" class="head">write P</text><text x="990" y="225" text-anchor="middle" class="small">registers → TMEM</text>
+  <line x1="1095" y1="208" x2="1155" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1165" y="160" width="165" height="95" rx="16" fill="#0f766e" filter="url(#shadow)"/>
+  <text x="1248" y="198" text-anchor="middle" class="head">row sum</text><text x="1248" y="225" text-anchor="middle" class="small">update state</text>
+
+  <path d="M430 255V350" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <polygon points="430,360 560,440 430,520 300,440" fill="#fff" stroke="#64748b" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="430" y="430" text-anchor="middle" class="note">did row max move</text>
+  <text x="430" y="452" text-anchor="middle" class="note">enough to matter?</text>
+
+  <path d="M300 440H180V590" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="205" y="424" class="dark">no: alpha = 1</text>
+  <rect x="85" y="600" width="260" height="100" rx="16" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="215" y="640" text-anchor="middle" class="head">skip O rescale</text><text x="215" y="668" text-anchor="middle" class="small">keep accumulating in TMEM</text>
+
+  <path d="M560 440H700V590" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="580" y="424" class="dark">yes: alpha &lt; 1</text>
+  <rect x="575" y="600" width="300" height="100" rx="16" fill="#dc2626" filter="url(#shadow)"/>
+  <text x="725" y="640" text-anchor="middle" class="head">correction warps rescale O</text><text x="725" y="668" text-anchor="middle" class="small">TMEM load → multiply → TMEM store</text>
+
+  <rect x="925" y="365" width="405" height="225" rx="20" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="955" y="408" class="note">Why delay the correction?</text>
+  <text x="955" y="445" class="dark">• O is large; rescaling it every block costs bandwidth.</text>
+  <text x="955" y="480" class="dark">• Small max changes can be suppressed by a threshold.</text>
+  <text x="955" y="515" class="dark">• A dedicated role performs only the needed corrections.</text>
+  <text x="955" y="550" class="dark">• Final normalization and V descale happen afterward.</text>
+
+  <text x="70" y="755" class="note">For FP8 P, softmax uses an exponent offset so representable probabilities survive quantization; final correction compensates for it.</text>
+</svg>

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="850" viewBox="0 0 1400 850" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-4 Blackwell warp roles</title>
+  <desc id="desc">Sixteen warps are divided among two softmax groups, correction, MMA issue, epilogue, loading, and scheduling, connected by asynchronous pipelines and barriers.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 19px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.edge{font:600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <rect width="1400" height="850" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">A 512-thread CTA is a cast of specialized warp roles</text>
+  <text x="60" y="88" class="sub">The exact assignment changes for one Q stage, but the two-stage path makes the division of labor clearest.</text>
+
+  <rect x="65" y="145" width="270" height="130" rx="18" fill="#ea580c" filter="url(#shadow)"/>
+  <text x="200" y="188" text-anchor="middle" class="head">warps 0–3: softmax 0</text>
+  <text x="200" y="216" text-anchor="middle" class="small">read S0 from TMEM</text><text x="200" y="240" text-anchor="middle" class="small">write P0 into TMEM</text>
+
+  <rect x="375" y="145" width="270" height="130" rx="18" fill="#c2410c" filter="url(#shadow)"/>
+  <text x="510" y="188" text-anchor="middle" class="head">warps 4–7: softmax 1</text>
+  <text x="510" y="216" text-anchor="middle" class="small">read S1 from TMEM</text><text x="510" y="240" text-anchor="middle" class="small">write P1 into TMEM</text>
+
+  <rect x="685" y="145" width="270" height="130" rx="18" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="820" y="188" text-anchor="middle" class="head">warps 8–11: correction</text>
+  <text x="820" y="216" text-anchor="middle" class="small">lazy rescale O in TMEM</text><text x="820" y="240" text-anchor="middle" class="small">normalize and convert output</text>
+
+  <rect x="995" y="145" width="270" height="130" rx="18" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="1130" y="188" text-anchor="middle" class="head">warp 12: MMA issue</text>
+  <text x="1130" y="216" text-anchor="middle" class="small">tcgen05 QK and PV</text><text x="1130" y="240" text-anchor="middle" class="small">leader CTA allocates TMEM</text>
+
+  <rect x="220" y="480" width="260" height="120" rx="18" fill="#0f766e" filter="url(#shadow)"/>
+  <text x="350" y="522" text-anchor="middle" class="head">warp 13: epilogue</text>
+  <text x="350" y="550" text-anchor="middle" class="small">SMEM O → TMA store</text>
+
+  <rect x="565" y="480" width="260" height="120" rx="18" fill="#0891b2" filter="url(#shadow)"/>
+  <text x="695" y="522" text-anchor="middle" class="head">warp 14: load</text>
+  <text x="695" y="550" text-anchor="middle" class="small">TMA Q / K / V + prefetch</text>
+
+  <rect x="910" y="480" width="260" height="120" rx="18" fill="#64748b" filter="url(#shadow)"/>
+  <text x="1040" y="522" text-anchor="middle" class="head">warp 15: scheduler</text>
+  <text x="1040" y="550" text-anchor="middle" class="small">CLC fetch or unused helper</text>
+
+  <path d="M695 480C695 380 1030 370 1090 278" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="760" y="395" class="edge">Q/K/V ready</text>
+  <path d="M1050 278C950 335 580 330 510 278" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M1120 278C1080 345 300 350 200 278" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="610" y="326" class="edge">S full</text>
+  <path d="M335 210H365" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M645 210H675" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="540" y="130" class="edge">row statistics / rescale decisions</text>
+  <path d="M820 275C800 390 505 410 410 477" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="580" y="423" class="edge">O normalized in SMEM</text>
+  <path d="M1040 480C1040 410 825 390 740 470" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="878" y="395" class="edge">next work</text>
+
+  <rect x="65" y="675" width="1200" height="105" rx="18" fill="#fff" stroke="#cbd5e1"/>
+  <text x="95" y="712" class="note">Register budgets follow roles.</text>
+  <text x="95" y="742" class="note">Softmax and correction warps request more registers; load, MMA-issue, epilogue, and scheduler warps give registers back.</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-4 two-stage Blackwell pipeline</title>
+  <desc id="desc">A timeline overlaps reverse-order TMA loads, tcgen05 QK and PV operations, two softmax groups, correction, and output storage. Probability handoff begins before the entire tile is written.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.lane{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.small{font:500 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#64748b}.block{font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.grid{stroke:#cbd5e1;stroke-width:1;stroke-dasharray:5 7}.base{stroke:#94a3b8;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1400" height="900" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">FA4 steady state: PV(i−1) overlaps QK(i)</text>
+  <text x="60" y="88" class="sub">Two Q stages alternate score processing while one MMA warp keeps tcgen05 supplied.</text>
+  <line x1="300" y1="120" x2="1320" y2="120" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/><text x="300" y="108" class="note">time</text>
+  <line x1="570" y1="135" x2="570" y2="760" class="grid"/><line x1="850" y1="135" x2="850" y2="760" class="grid"/><line x1="1130" y1="135" x2="1130" y2="760" class="grid"/>
+
+  <text x="55" y="192" class="lane">load warp</text><text x="55" y="214" class="small">reverse K/V order</text><line x1="280" y1="200" x2="1320" y2="200" class="base"/>
+  <rect x="320" y="163" width="220" height="64" rx="12" fill="#0891b2" filter="url(#shadow)"/><text x="430" y="201" text-anchor="middle" class="block">TMA K/V[n−1]</text>
+  <rect x="610" y="163" width="220" height="64" rx="12" fill="#0891b2" filter="url(#shadow)"/><text x="720" y="201" text-anchor="middle" class="block">TMA K/V[n−2]</text>
+  <rect x="900" y="163" width="220" height="64" rx="12" fill="#0891b2" filter="url(#shadow)"/><text x="1010" y="201" text-anchor="middle" class="block">TMA K/V[n−3]</text>
+
+  <text x="55" y="305" class="lane">MMA warp</text><text x="55" y="327" class="small">single-thread tcgen05 issue</text><line x1="280" y1="313" x2="1320" y2="313" class="base"/>
+  <rect x="335" y="276" width="180" height="64" rx="12" fill="#2563eb" filter="url(#shadow)"/><text x="425" y="314" text-anchor="middle" class="block">QK0(i)</text>
+  <rect x="525" y="276" width="180" height="64" rx="12" fill="#16a34a" filter="url(#shadow)"/><text x="615" y="314" text-anchor="middle" class="block">PV0(i−1)</text>
+  <rect x="715" y="276" width="180" height="64" rx="12" fill="#7c3aed" filter="url(#shadow)"/><text x="805" y="314" text-anchor="middle" class="block">QK1(i)</text>
+  <rect x="905" y="276" width="180" height="64" rx="12" fill="#0f766e" filter="url(#shadow)"/><text x="995" y="314" text-anchor="middle" class="block">PV1(i−1)</text>
+  <rect x="1095" y="276" width="180" height="64" rx="12" fill="#2563eb" filter="url(#shadow)"/><text x="1185" y="314" text-anchor="middle" class="block">QK0(i+1)</text>
+
+  <text x="55" y="420" class="lane">softmax 0</text><text x="55" y="442" class="small">S0 → P0 in TMEM</text><line x1="280" y1="428" x2="1320" y2="428" class="base"/>
+  <rect x="570" y="383" width="300" height="84" rx="14" fill="#ea580c" filter="url(#shadow)"/><text x="720" y="414" text-anchor="middle" class="block">mask + row max + exp2</text><text x="720" y="442" text-anchor="middle" class="block">write P0(i)</text>
+  <path d="M755 383V350" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M805 467V515" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+
+  <text x="55" y="545" class="lane">softmax 1</text><text x="55" y="567" class="small">S1 → P1 in TMEM</text><line x1="280" y1="553" x2="1320" y2="553" class="base"/>
+  <rect x="850" y="508" width="300" height="84" rx="14" fill="#c2410c" filter="url(#shadow)"/><text x="1000" y="539" text-anchor="middle" class="block">mask + row max + exp2</text><text x="1000" y="567" text-anchor="middle" class="block">write P1(i)</text>
+  <path d="M1000 508V350" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <text x="55" y="670" class="lane">correction</text><text x="55" y="692" class="small">rescale O only when needed</text><line x1="280" y1="678" x2="1320" y2="678" class="base"/>
+  <rect x="650" y="633" width="260" height="84" rx="14" fill="#16a34a" filter="url(#shadow)"/><text x="780" y="665" text-anchor="middle" class="block">read row scale</text><text x="780" y="692" text-anchor="middle" class="block">conditional TMEM rescale</text>
+  <rect x="970" y="633" width="260" height="84" rx="14" fill="#0f766e" filter="url(#shadow)"/><text x="1100" y="665" text-anchor="middle" class="block">normalize O</text><text x="1100" y="692" text-anchor="middle" class="block">SMEM → TMA output</text>
+
+  <rect x="55" y="785" width="1290" height="74" rx="16" fill="#fff" stroke="#cbd5e1"/>
+  <text x="82" y="816" class="note">Dashed handoff: PV may begin after roughly three quarters of P is stored; it need not wait for the whole P tile.</text>
+  <text x="82" y="842" class="small">Reverse K/V traversal processes the causal frontier first, then reaches fully valid blocks with simpler masking.</text>
+</svg>

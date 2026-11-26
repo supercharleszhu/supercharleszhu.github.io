@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-4 TMEM layout and two-CTA row ownership</title>
+  <desc id="desc">The upper panel maps score, probability, and output regions in tensor memory. The lower panel shows how two CTAs cooperatively own interleaved 128-row bands.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 22px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.label{font:700 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.note{font:600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="820" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">TMEM is the shared accumulator workspace</text>
+  <text x="60" y="88" class="sub">Scores arrive from tcgen05, probabilities replace them in place, and output accumulators occupy separate columns.</text>
+
+  <rect x="55" y="125" width="1290" height="275" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="85" y="165" class="head">Conceptual TMEM column map</text>
+  <text x="85" y="194" class="small">Exact offsets depend on the selected tile and Q-stage count.</text>
+  <rect x="110" y="235" width="270" height="100" rx="14" fill="#2563eb"/>
+  <text x="245" y="278" text-anchor="middle" class="label">S0 → P0</text><text x="245" y="306" text-anchor="middle" class="small" fill="#fff">Q stage 0 reuses columns</text>
+  <rect x="390" y="235" width="270" height="100" rx="14" fill="#7c3aed"/>
+  <text x="525" y="278" text-anchor="middle" class="label">S1 → P1</text><text x="525" y="306" text-anchor="middle" class="small" fill="#fff">Q stage 1 reuses columns</text>
+  <rect x="700" y="235" width="270" height="100" rx="14" fill="#16a34a"/>
+  <text x="835" y="278" text-anchor="middle" class="label">O stage 0</text><text x="835" y="306" text-anchor="middle" class="small" fill="#fff">persistent FP32 accumulator</text>
+  <rect x="980" y="235" width="270" height="100" rx="14" fill="#0f766e"/>
+  <text x="1115" y="278" text-anchor="middle" class="label">O stage 1</text><text x="1115" y="306" text-anchor="middle" class="small" fill="#fff">persistent FP32 accumulator</text>
+
+  <rect x="55" y="435" width="1290" height="315" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="85" y="475" class="head">Optional 2CTA tcgen05 instruction: cooperative rows, local softmax</text>
+  <text x="85" y="504" class="small">Example with 128 rows per CTA and two Q stages: each CTA owns two separated 128-row bands.</text>
+  <text x="92" y="562" class="note">logical rows</text>
+  <rect x="230" y="535" width="240" height="80" rx="12" fill="#2563eb"/>
+  <text x="350" y="568" text-anchor="middle" class="label">CTA 0</text><text x="350" y="592" text-anchor="middle" class="small" fill="#fff">rows 0–127</text>
+  <rect x="475" y="535" width="240" height="80" rx="12" fill="#0891b2"/>
+  <text x="595" y="568" text-anchor="middle" class="label">CTA 1</text><text x="595" y="592" text-anchor="middle" class="small" fill="#fff">rows 128–255</text>
+  <rect x="720" y="535" width="240" height="80" rx="12" fill="#2563eb"/>
+  <text x="840" y="568" text-anchor="middle" class="label">CTA 0</text><text x="840" y="592" text-anchor="middle" class="small" fill="#fff">rows 256–383</text>
+  <rect x="965" y="535" width="240" height="80" rx="12" fill="#0891b2"/>
+  <text x="1085" y="568" text-anchor="middle" class="label">CTA 1</text><text x="1085" y="592" text-anchor="middle" class="small" fill="#fff">rows 384–511</text>
+  <text x="230" y="659" class="note">One cooperative MMA spans the CTA pair.</text>
+  <text x="230" y="688" class="small">K/V can be shared across the pair, but softmax state, correction, and output ownership remain per CTA.</text>
+  <text x="230" y="716" class="small">2CTA is a configuration choice—not a claim that every forward kernel uses a two-CTA group.</text>
+</svg>
