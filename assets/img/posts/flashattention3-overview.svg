@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-2 versus FlashAttention-3 execution model</title>
+  <desc id="desc">FlashAttention-2 follows a mostly serial copy, matrix multiply, softmax, and matrix multiply chain. FlashAttention-3 overlaps TMA, WGMMA, and CUDA core work.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".15"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.label{font:700 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.note{font:600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="720" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">From FlashAttention-2 to FlashAttention-3</text>
+  <text x="60" y="88" class="sub">The exact online-softmax algorithm stays the same; Hopper changes how independent hardware engines are scheduled.</text>
+
+  <rect x="55" y="125" width="620" height="515" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="90" y="170" class="head">FA2: efficient but mostly one chain</text>
+  <text x="90" y="200" class="small">Ampere warps repeatedly copy, wait, multiply, normalize, and multiply.</text>
+  <rect x="105" y="270" width="125" height="72" rx="14" fill="#0891b2"/><text x="168" y="312" text-anchor="middle" class="label">cp.async</text>
+  <line x1="230" y1="306" x2="275" y2="306" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="282" y="270" width="125" height="72" rx="14" fill="#2563eb"/><text x="345" y="312" text-anchor="middle" class="label">QK MMA</text>
+  <line x1="407" y1="306" x2="452" y2="306" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="459" y="270" width="125" height="72" rx="14" fill="#ea580c"/><text x="522" y="312" text-anchor="middle" class="label">softmax</text>
+  <line x1="522" y1="342" x2="522" y2="390" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="459" y="400" width="125" height="72" rx="14" fill="#16a34a"/><text x="522" y="442" text-anchor="middle" class="label">PV MMA</text>
+  <text x="105" y="535" class="note">Each dependency exposes a bubble:</text>
+  <text x="105" y="568" class="small">memory waits, Tensor Core waits, and scalar softmax work</text>
+  <text x="105" y="592" class="small">are harder to overlap across the same warp instruction stream.</text>
+
+  <rect x="725" y="125" width="620" height="515" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="760" y="170" class="head">FA3: three engines progress together</text>
+  <text x="760" y="200" class="small">Hopper separates data movement, matrix issue, and score processing.</text>
+  <text x="765" y="260" class="note">TMA engine</text>
+  <rect x="920" y="225" width="315" height="64" rx="14" fill="#0891b2"/><text x="1078" y="263" text-anchor="middle" class="label">prefetch future K/V stages</text>
+  <text x="765" y="360" class="note">Tensor Cores</text>
+  <rect x="920" y="325" width="145" height="64" rx="14" fill="#2563eb"/><text x="993" y="363" text-anchor="middle" class="label">QK WGMMA</text>
+  <rect x="1090" y="325" width="145" height="64" rx="14" fill="#16a34a"/><text x="1163" y="363" text-anchor="middle" class="label">PV WGMMA</text>
+  <text x="765" y="460" class="note">CUDA cores / SFUs</text>
+  <rect x="920" y="425" width="315" height="64" rx="14" fill="#ea580c"/><text x="1078" y="463" text-anchor="middle" class="label">mask + online-softmax state</text>
+  <path d="M1078 289V320" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M993 389C993 408 1015 410 1040 423" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M1115 489C1115 520 1163 520 1163 394" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="765" y="548" class="note">The optimization target is overlap, not a new attention equation.</text>
+  <text x="765" y="581" class="small">TMA feeds shared memory while queued WGMMA executes and another</text>
+  <text x="765" y="605" class="small">warpgroup updates row maxima, row sums, scales, and output state.</text>
+</svg>

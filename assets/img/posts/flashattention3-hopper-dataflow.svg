@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-3 Hopper dataflow</title>
+  <desc id="desc">A producer warp issues TMA transfers into circular shared-memory stages. Two consumer warpgroups issue shared-shared QK WGMMA and register-shared PV WGMMA with register accumulators.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#ecfeff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 20px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.label{font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.tiny{font:500 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <rect width="1400" height="760" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Hopper dataflow: move tiles once, consume them asynchronously</text>
+  <text x="60" y="88" class="sub">TMA handles regular bulk movement; WGMMA consumes shared-memory descriptors and accumulates into warpgroup registers.</text>
+
+  <rect x="55" y="130" width="250" height="520" rx="20" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="85" y="175" class="head">HBM</text>
+  <rect x="85" y="220" width="190" height="70" rx="14" fill="#334155"/><text x="180" y="262" text-anchor="middle" class="label">Q tile</text>
+  <rect x="85" y="320" width="190" height="70" rx="14" fill="#334155"/><text x="180" y="362" text-anchor="middle" class="label">K tiles</text>
+  <rect x="85" y="420" width="190" height="70" rx="14" fill="#334155"/><text x="180" y="462" text-anchor="middle" class="label">V tiles</text>
+  <text x="85" y="550" class="small">Regular tiles use TMA.</text>
+  <text x="85" y="576" class="small">Irregular packed rows may</text>
+  <text x="85" y="600" class="small">fall back to cp.async.</text>
+
+  <rect x="365" y="130" width="390" height="520" rx="20" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="395" y="175" class="head">Producer + circular shared memory</text>
+  <rect x="405" y="215" width="310" height="58" rx="13" fill="#0891b2"/><text x="560" y="251" text-anchor="middle" class="label">one elected lane issues TMA</text>
+  <text x="405" y="310" class="small">Q is loaded once for the work tile.</text>
+  <rect x="405" y="338" width="140" height="90" rx="14" fill="#67e8f9" stroke="#0891b2"/><text x="475" y="375" text-anchor="middle" class="head">stage 0</text><text x="475" y="403" text-anchor="middle" class="tiny">K[j], V[j]</text>
+  <rect x="575" y="338" width="140" height="90" rx="14" fill="#a5f3fc" stroke="#0891b2"/><text x="645" y="375" text-anchor="middle" class="head">stage 1</text><text x="645" y="403" text-anchor="middle" class="tiny">K[j-1], V[j-1]</text>
+  <path d="M545 455C570 480 570 480 595 455" fill="none" stroke="#0891b2" stroke-width="3" marker-end="url(#a)"/>
+  <text x="560" y="515" text-anchor="middle" class="small">transaction barriers prevent overwrite</text>
+  <text x="560" y="540" text-anchor="middle" class="small">until all consumers release a stage</text>
+
+  <rect x="815" y="130" width="530" height="520" rx="20" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="845" y="175" class="head">Consumer warpgroups</text>
+  <rect x="855" y="215" width="205" height="88" rx="14" fill="#2563eb"/><text x="958" y="250" text-anchor="middle" class="label">QK WGMMA SS</text><text x="958" y="277" text-anchor="middle" class="label">shared Q + shared K</text>
+  <rect x="1100" y="215" width="205" height="88" rx="14" fill="#16a34a"/><text x="1203" y="250" text-anchor="middle" class="label">PV WGMMA RS</text><text x="1203" y="277" text-anchor="middle" class="label">register P + shared V</text>
+  <rect x="855" y="355" width="450" height="74" rx="14" fill="#f97316"/><text x="1080" y="388" text-anchor="middle" class="label">FP32 score and output accumulators</text><text x="1080" y="413" text-anchor="middle" class="label">distributed across 128 threads</text>
+  <rect x="855" y="480" width="450" height="82" rx="14" fill="#7c3aed"/><text x="1080" y="514" text-anchor="middle" class="label">register output → shared output</text><text x="1080" y="540" text-anchor="middle" class="label">→ TMA store to HBM</text>
+  <line x1="958" y1="303" x2="1015" y2="350" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="1203" y1="303" x2="1145" y2="350" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="1080" y1="429" x2="1080" y2="473" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <path d="M305 355H355" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <path d="M755 383H805" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <text x="60" y="705" class="small">The producer reserves a warpgroup-aligned slot, but the regular all-TMA path keeps only one producer warp active and uses one elected lane per transfer.</text>
+</svg>

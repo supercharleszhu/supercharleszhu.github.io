@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="780" viewBox="0 0 1400 780" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention-3 persistent scheduling and FP8 layout repair</title>
+  <desc id="desc">The left panel shows persistent CTAs repeatedly taking Q tiles. The right panel shows FP8 values being descaled, transposed or permuted into legal WGMMA operand layouts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#f5f3ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 23px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.label{font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.tiny{font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="780" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Grid-level persistence and datatype-level layout repair</text>
+  <text x="60" y="88" class="sub">FA3 optimizes both which Q tile runs next and how FP8 operands become legal Hopper WGMMA inputs.</text>
+
+  <rect x="55" y="130" width="630" height="570" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="90" y="175" class="head">Persistent Q-tile scheduling</text>
+  <text x="90" y="205" class="small">Launch about one CTA per SM, then reuse each CTA for many logical tiles.</text>
+  <rect x="95" y="250" width="135" height="70" rx="14" fill="#2563eb"/><text x="163" y="292" text-anchor="middle" class="label">CTA 0</text>
+  <rect x="95" y="350" width="135" height="70" rx="14" fill="#7c3aed"/><text x="163" y="392" text-anchor="middle" class="label">CTA 1</text>
+  <rect x="285" y="235" width="340" height="210" rx="16" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="315" y="270" class="tiny">flattened logical Q tiles</text>
+  <g fill="#0ea5e9"><rect x="315" y="295" width="55" height="45" rx="8"/><rect x="385" y="295" width="55" height="45" rx="8"/><rect x="455" y="295" width="55" height="45" rx="8"/><rect x="525" y="295" width="55" height="45" rx="8"/></g>
+  <g fill="#8b5cf6"><rect x="315" y="360" width="55" height="45" rx="8"/><rect x="385" y="360" width="55" height="45" rx="8"/><rect x="455" y="360" width="55" height="45" rx="8"/><rect x="525" y="360" width="55" height="45" rx="8"/></g>
+  <path d="M230 285H305" stroke="#475569" stroke-width="3" marker-end="url(#a)"/><path d="M230 385H305" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <text x="95" y="500" class="small">Static schedule: CTA i takes i, i + gridDim.x, ...</text>
+  <text x="95" y="532" class="small">Causal/local schedule: a global counter gives the next tile,</text>
+  <text x="95" y="556" class="small">then longest-processing-time-first and L2 swizzling reorder it.</text>
+  <text x="95" y="612" class="small">Persistence reduces launch overhead and balances uneven Q blocks.</text>
+
+  <rect x="715" y="130" width="630" height="570" rx="22" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="750" y="175" class="head">FP8 layout and scaling path</text>
+  <text x="750" y="205" class="small">Higher Tensor Core throughput requires explicit format, scale, and layout work.</text>
+  <rect x="760" y="250" width="150" height="75" rx="14" fill="#334155"/><text x="835" y="282" text-anchor="middle" class="label">row-major V</text><text x="835" y="305" text-anchor="middle" class="label">FP8 bytes</text>
+  <rect x="955" y="250" width="150" height="75" rx="14" fill="#0891b2"/><text x="1030" y="282" text-anchor="middle" class="label">SMEM</text><text x="1030" y="305" text-anchor="middle" class="label">transpose</text>
+  <rect x="1150" y="250" width="150" height="75" rx="14" fill="#16a34a"/><text x="1225" y="282" text-anchor="middle" class="label">K-major V</text><text x="1225" y="305" text-anchor="middle" class="label">for WGMMA</text>
+  <line x1="910" y1="287" x2="945" y2="287" stroke="#475569" stroke-width="3" marker-end="url(#a)"/><line x1="1105" y1="287" x2="1140" y2="287" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <rect x="760" y="390" width="150" height="75" rx="14" fill="#2563eb"/><text x="835" y="422" text-anchor="middle" class="label">QK FP32</text><text x="835" y="445" text-anchor="middle" class="label">accumulators</text>
+  <rect x="955" y="390" width="150" height="75" rx="14" fill="#7c3aed"/><text x="1030" y="422" text-anchor="middle" class="label">permute +</text><text x="1030" y="445" text-anchor="middle" class="label">convert P</text>
+  <rect x="1150" y="390" width="150" height="75" rx="14" fill="#16a34a"/><text x="1225" y="422" text-anchor="middle" class="label">legal FP8</text><text x="1225" y="445" text-anchor="middle" class="label">PV operand</text>
+  <line x1="910" y1="427" x2="945" y2="427" stroke="#475569" stroke-width="3" marker-end="url(#a)"/><line x1="1105" y1="427" x2="1140" y2="427" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <rect x="820" y="535" width="420" height="85" rx="16" fill="#f97316"/>
+  <text x="1030" y="570" text-anchor="middle" class="label">Q/K descales modify score scale</text>
+  <text x="1030" y="597" text-anchor="middle" class="label">V descale is folded into final normalization</text>
+  <text x="750" y="665" class="small">The open-source kernel demonstrates FP8 execution mechanics; the paper’s Hadamard transform is not integrated here.</text>
+</svg>

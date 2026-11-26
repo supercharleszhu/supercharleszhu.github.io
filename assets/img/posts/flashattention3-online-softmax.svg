@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">FlashAttention online-softmax state transition</title>
+  <desc id="desc">A score tile updates row maxima, computes an alpha rescaling factor, rescales the old row sum and output, exponentiates current scores, accumulates the new row sum, and prepares probabilities for PV.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff7ed"/><stop offset="1" stop-color="#f8fafc"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.eq{font:600 17px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#0f172a}
+    </style>
+  </defs>
+  <rect width="1400" height="760" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">The “softmax” phase is a complete online state transition</text>
+  <text x="60" y="88" class="sub">Every new score block must move the old row sum and output numerator into the new maximum’s numerical basis.</text>
+
+  <rect x="70" y="145" width="260" height="150" rx="18" fill="#fff" stroke="#cbd5e1" filter="url(#shadow)"/>
+  <text x="100" y="185" class="eq">old state</text>
+  <text x="100" y="220" class="eq">m[j+1]</text><text x="100" y="250" class="eq">ℓ[j+1]</text><text x="100" y="280" class="eq">O[j+1]</text>
+
+  <rect x="410" y="145" width="260" height="150" rx="18" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="540" y="190" text-anchor="middle" class="head">QK[j]</text>
+  <text x="540" y="225" text-anchor="middle" class="head">current score tile</text>
+  <text x="540" y="260" text-anchor="middle" class="head">S[j]</text>
+
+  <rect x="750" y="130" width="570" height="180" rx="18" fill="#ea580c" filter="url(#shadow)"/>
+  <text x="1035" y="170" text-anchor="middle" class="head">1. choose the new row maximum</text>
+  <text x="790" y="215" class="eq">m[j] = max(m[j+1], rowmax(S[j]))</text>
+  <text x="790" y="260" class="eq">α[j] = exp((m[j+1] - m[j]) × scale)</text>
+  <line x1="330" y1="220" x2="400" y2="220" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="670" y1="220" x2="740" y2="220" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+
+  <rect x="70" y="390" width="360" height="180" rx="18" fill="#7c3aed" filter="url(#shadow)"/>
+  <text x="250" y="430" text-anchor="middle" class="head">2. rescale prior state</text>
+  <text x="105" y="480" class="eq">ℓ ← α[j] × ℓ</text>
+  <text x="105" y="525" class="eq">O ← α[j] × O</text>
+
+  <rect x="520" y="390" width="360" height="180" rx="18" fill="#0891b2" filter="url(#shadow)"/>
+  <text x="700" y="430" text-anchor="middle" class="head">3. normalize current scores</text>
+  <text x="555" y="480" class="eq">P[j] = exp((S[j] - m[j]) × scale)</text>
+  <text x="555" y="525" class="eq">ℓ ← ℓ + rowsum(P[j])</text>
+
+  <rect x="970" y="390" width="360" height="180" rx="18" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="1150" y="430" text-anchor="middle" class="head">4. update output numerator</text>
+  <text x="1005" y="480" class="eq">O ← O + P[j] × V[j]</text>
+  <text x="1005" y="525" class="eq">carry P[j] into the PV pipeline</text>
+
+  <path d="M1035 310C1035 350 250 350 250 380" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="430" y1="480" x2="510" y2="480" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="880" y1="480" x2="960" y2="480" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+
+  <rect x="190" y="635" width="1020" height="72" rx="18" fill="#fff" stroke="#cbd5e1"/>
+  <text x="700" y="667" text-anchor="middle" class="eq">finalize: LSE = m + log(ℓ), output = O / ℓ</text>
+  <text x="700" y="693" text-anchor="middle" class="small">The order of K/V blocks may be reversed because this recurrence is order-independent.</text>
+</svg>
