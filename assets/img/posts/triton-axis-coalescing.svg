@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="800" viewBox="0 0 1400 800" role="img" aria-labelledby="title desc">
+  <title id="title">Triton AxisInfo analysis driving coalescing and vectorization</title>
+  <desc id="desc">A forward dataflow analysis computes contiguity, divisibility, constancy, and constants; memory passes use those facts to choose layouts and vector widths.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 19px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="800" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Analysis turns pointer arithmetic into memory-layout facts</text>
+  <text x="60" y="88" class="sub">AxisInfo is a sparse forward dataflow analysis whose lattice is deliberately small and GPU-oriented.</text>
+
+  <rect x="70" y="155" width="280" height="125" rx="18" fill="#7c3aed" filter="url(#shadow)"/>
+  <text x="210" y="194" text-anchor="middle" class="head">SSA pointer graph</text>
+  <text x="210" y="224" text-anchor="middle" class="small">range + splat + addptr</text><text x="210" y="248" text-anchor="middle" class="small">broadcast, select, mask</text>
+  <line x1="350" y1="218" x2="415" y2="218" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="425" y="135" width="340" height="165" rx="18" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="595" y="174" text-anchor="middle" class="head">AxisInfo lattice per dimension</text>
+  <text x="595" y="207" text-anchor="middle" class="small">contiguity</text><text x="595" y="231" text-anchor="middle" class="small">divisibility / alignment</text>
+  <text x="595" y="255" text-anchor="middle" class="small">constancy + optional constant</text>
+  <line x1="765" y1="218" x2="830" y2="218" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="840" y="155" width="220" height="125" rx="18" fill="#0891b2" filter="url(#shadow)"/>
+  <text x="950" y="194" text-anchor="middle" class="head">Coalesce</text>
+  <text x="950" y="224" text-anchor="middle" class="small">choose ownership</text><text x="950" y="248" text-anchor="middle" class="small">for memory order</text>
+  <rect x="1110" y="155" width="220" height="125" rx="18" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="1220" y="194" text-anchor="middle" class="head">LLVM lowering</text>
+  <text x="1220" y="224" text-anchor="middle" class="small">choose vector width</text><text x="1220" y="248" text-anchor="middle" class="small">respect mask alignment</text>
+
+  <rect x="70" y="360" width="1260" height="320" rx="22" fill="#fff" stroke="#cbd5e1"/>
+  <text x="100" y="402" class="note">Example: offsets = program_base + arange(0, 256)</text>
+  <rect x="110" y="445" width="245" height="95" rx="14" fill="#7c3aed"/><text x="233" y="482" text-anchor="middle" class="head">contiguous 256</text><text x="233" y="510" text-anchor="middle" class="small">adjacent logical elements</text>
+  <line x1="355" y1="493" x2="420" y2="493" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="430" y="445" width="245" height="95" rx="14" fill="#2563eb"/><text x="553" y="482" text-anchor="middle" class="head">blocked layout</text><text x="553" y="510" text-anchor="middle" class="small">adjacent lanes/values</text>
+  <line x1="675" y1="493" x2="740" y2="493" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="750" y="445" width="245" height="95" rx="14" fill="#0891b2"/><text x="873" y="482" text-anchor="middle" class="head">vector width 2</text><text x="873" y="510" text-anchor="middle" class="small">mask and alignment allow it</text>
+  <line x1="995" y1="493" x2="1060" y2="493" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1070" y="445" width="220" height="95" rx="14" fill="#16a34a"/><text x="1180" y="482" text-anchor="middle" class="head">ld.global.v2</text><text x="1180" y="510" text-anchor="middle" class="small">concrete PTX</text>
+  <text x="110" y="604" class="note">System-design choice: use a cheap monotone analysis with conservative joins rather than symbolic theorem proving.</text>
+  <text x="110" y="638" class="note">Benefit: fast, predictable compilation. Cost: missed opportunities when pointer expressions exceed the lattice.</text>
+</svg>

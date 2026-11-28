@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Triton layout conversion removal and rematerialization</title>
+  <desc id="desc">Layout propagation starts from anchors, then compares the cost of an explicit shared-memory conversion against recomputing producers directly in the desired layout.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1400" height="820" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">RemoveLayoutConversions is a graph rewrite with a cost model</text>
+  <text x="60" y="88" class="sub">The compiler tries to move the desired layout through cheap producers instead of paying for redistribution.</text>
+
+  <rect x="75" y="145" width="240" height="105" rx="16" fill="#7c3aed" filter="url(#shadow)"/>
+  <text x="195" y="185" text-anchor="middle" class="head">cheap producer graph</text><text x="195" y="215" text-anchor="middle" class="small">add, cast, broadcast</text>
+  <line x1="315" y1="198" x2="380" y2="198" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="390" y="145" width="250" height="105" rx="16" fill="#ea580c" filter="url(#shadow)"/>
+  <text x="515" y="185" text-anchor="middle" class="head">convert_layout</text><text x="515" y="215" text-anchor="middle" class="small">shuffle / SMEM / sync</text>
+  <line x1="640" y1="198" x2="705" y2="198" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="715" y="145" width="260" height="105" rx="16" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="845" y="185" text-anchor="middle" class="head">layout anchor</text><text x="845" y="215" text-anchor="middle" class="small">load/store, dot, atomic</text>
+  <line x1="975" y1="198" x2="1040" y2="198" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1050" y="145" width="280" height="105" rx="16" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="1190" y="185" text-anchor="middle" class="head">required encoding</text><text x="1190" y="215" text-anchor="middle" class="small">hardware-facing invariant</text>
+
+  <polygon points="700,340 900,450 700,560 500,450" fill="#fff" stroke="#64748b" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="700" y="430" text-anchor="middle" class="note">recompute producer graph</text><text x="700" y="455" text-anchor="middle" class="note">in target layout cheaper than</text><text x="700" y="480" text-anchor="middle" class="note">explicit conversion?</text>
+  <path d="M500 450H300V640" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="350" y="432" class="note">yes</text>
+  <rect x="110" y="650" width="390" height="100" rx="16" fill="#16a34a" filter="url(#shadow)"/>
+  <text x="305" y="688" text-anchor="middle" class="head">rematerialize backward</text><text x="305" y="716" text-anchor="middle" class="small">clone cheap ops with new result types</text>
+  <path d="M900 450H1100V640" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="1010" y="432" class="note">no</text>
+  <rect x="900" y="650" width="390" height="100" rx="16" fill="#dc2626" filter="url(#shadow)"/>
+  <text x="1095" y="688" text-anchor="middle" class="head">retain conversion</text><text x="1095" y="716" text-anchor="middle" class="small">or hoist it to a cheaper position</text>
+
+  <text x="75" y="302" class="note">Four phases: forward propagation → backward rematerialization fixpoint → conversion hoisting → cleanup.</text>
+  <text x="75" y="785" class="note">The model is intentionally approximate: byte traffic and synchronization versus recompute, with penalties for expensive math and reductions.</text>
+</svg>

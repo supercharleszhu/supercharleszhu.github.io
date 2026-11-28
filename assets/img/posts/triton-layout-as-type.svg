@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Triton layout as a tensor type encoding</title>
+  <desc id="desc">A logical tensor gains a blocked encoding, layout conversions become explicit operations, and lowering classifies conversion costs by register, lane, warp, and block movement.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 19px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.tiny{font:500 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <rect width="1400" height="820" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Layout is part of the tensor type, not hidden compiler metadata</text>
+  <text x="60" y="88" class="sub">That makes ownership verifiable and compositional—but makes redistribution an explicit optimization problem.</text>
+
+  <rect x="70" y="145" width="300" height="125" rx="18" fill="#7c3aed" filter="url(#shadow)"/>
+  <text x="220" y="184" text-anchor="middle" class="head">tensor&lt;256xf32&gt;</text>
+  <text x="220" y="214" text-anchor="middle" class="small">logical value in TTIR</text><text x="220" y="239" text-anchor="middle" class="small">no thread ownership yet</text>
+  <line x1="370" y1="208" x2="430" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="440" y="145" width="400" height="125" rx="18" fill="#2563eb" filter="url(#shadow)"/>
+  <text x="640" y="181" text-anchor="middle" class="head">tensor&lt;256xf32, #blocked&gt;</text>
+  <text x="640" y="212" text-anchor="middle" class="small">size/thread × lanes × warps × CTAs</text><text x="640" y="239" text-anchor="middle" class="small">ownership is now checked by types</text>
+  <line x1="840" y1="208" x2="900" y2="208" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="910" y="145" width="420" height="125" rx="18" fill="#ea580c" filter="url(#shadow)"/>
+  <text x="1120" y="181" text-anchor="middle" class="head">ttg.convert_layout</text>
+  <text x="1120" y="212" text-anchor="middle" class="small">the cost is visible in SSA</text><text x="1120" y="239" text-anchor="middle" class="small">and can be propagated, hoisted, or removed</text>
+
+  <rect x="70" y="335" width="1260" height="365" rx="22" fill="#fff" stroke="#cbd5e1"/>
+  <text x="100" y="378" class="note">Lowering asks which ownership dimension changed</text>
+  <rect x="105" y="425" width="250" height="110" rx="15" fill="#16a34a"/>
+  <text x="230" y="464" text-anchor="middle" class="head">register only</text><text x="230" y="493" text-anchor="middle" class="small">reorder local values</text>
+  <rect x="400" y="425" width="250" height="110" rx="15" fill="#0891b2"/>
+  <text x="525" y="464" text-anchor="middle" class="head">lane exchange</text><text x="525" y="493" text-anchor="middle" class="small">warp shuffle or SMEM</text>
+  <rect x="695" y="425" width="250" height="110" rx="15" fill="#2563eb"/>
+  <text x="820" y="464" text-anchor="middle" class="head">warp exchange</text><text x="820" y="493" text-anchor="middle" class="small">swizzled shared memory</text>
+  <rect x="990" y="425" width="250" height="110" rx="15" fill="#64748b"/>
+  <text x="1115" y="464" text-anchor="middle" class="head">block exchange</text><text x="1115" y="493" text-anchor="middle" class="small">requires cross-CTA support</text>
+  <text x="105" y="590" class="note">Why this design works</text>
+  <text x="105" y="625" class="tiny">Type equality gives CSE and canonicalization the right semantics. Operation verifiers reject incompatible layouts early.</text>
+  <text x="105" y="654" class="tiny">The cost is compiler complexity: loops, branches, and block arguments must be rewritten whenever a propagated layout changes.</text>
+</svg>

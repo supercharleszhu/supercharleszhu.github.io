@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Triton software pipelining and warp specialization</title>
+  <desc id="desc">The compiler assigns latency, schedules loop operations, lowers asynchronous copies and barriers, expands prologue/kernel/epilogue, and can partition producer and consumer warp roles.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".14"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 31px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}.sub{font:400 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#475569}.head{font:700 17px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.small{font:500 13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#fff}.note{font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#334155}.lane{font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#0f172a}
+    </style>
+  </defs>
+  <rect width="1400" height="860" rx="24" fill="url(#bg)"/>
+  <text x="60" y="58" class="title">Pipelining is a sequence of analyses and rewrites—not one pass</text>
+  <text x="60" y="88" class="sub">Latency assignment builds intent; scheduling orders stages; lowering creates buffers, async operations, and barriers.</text>
+
+  <rect x="65" y="135" width="220" height="95" rx="15" fill="#7c3aed" filter="url(#shadow)"/><text x="175" y="174" text-anchor="middle" class="head">assign latencies</text><text x="175" y="201" text-anchor="middle" class="small">load / MMA distances</text>
+  <line x1="285" y1="183" x2="330" y2="183" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="340" y="135" width="220" height="95" rx="15" fill="#2563eb" filter="url(#shadow)"/><text x="450" y="174" text-anchor="middle" class="head">schedule loop</text><text x="450" y="201" text-anchor="middle" class="small">coarse stage/order</text>
+  <line x1="560" y1="183" x2="605" y2="183" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="615" y="135" width="220" height="95" rx="15" fill="#0891b2" filter="url(#shadow)"/><text x="725" y="174" text-anchor="middle" class="head">lower loop</text><text x="725" y="201" text-anchor="middle" class="small">buffers, async copy, barriers</text>
+  <line x1="835" y1="183" x2="880" y2="183" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="890" y="135" width="220" height="95" rx="15" fill="#0f766e" filter="url(#shadow)"/><text x="1000" y="174" text-anchor="middle" class="head">expand pipeline</text><text x="1000" y="201" text-anchor="middle" class="small">prologue / kernel / epilogue</text>
+  <line x1="1110" y1="183" x2="1155" y2="183" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1165" y="135" width="170" height="95" rx="15" fill="#16a34a" filter="url(#shadow)"/><text x="1250" y="174" text-anchor="middle" class="head">cleanup</text><text x="1250" y="201" text-anchor="middle" class="small">waits + canonicalize</text>
+
+  <text x="65" y="310" class="lane">load engine / producer role</text>
+  <line x1="300" y1="318" x2="1330" y2="318" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="330" y="280" width="220" height="70" rx="12" fill="#0891b2"/><text x="440" y="322" text-anchor="middle" class="head">load tile i+1</text>
+  <rect x="650" y="280" width="220" height="70" rx="12" fill="#0891b2"/><text x="760" y="322" text-anchor="middle" class="head">load tile i+2</text>
+  <rect x="970" y="280" width="220" height="70" rx="12" fill="#0891b2"/><text x="1080" y="322" text-anchor="middle" class="head">load tile i+3</text>
+
+  <text x="65" y="430" class="lane">consumer compute role</text>
+  <line x1="300" y1="438" x2="1330" y2="438" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="490" y="400" width="260" height="70" rx="12" fill="#2563eb"/><text x="620" y="442" text-anchor="middle" class="head">MMA tile i</text>
+  <rect x="810" y="400" width="260" height="70" rx="12" fill="#7c3aed"/><text x="940" y="442" text-anchor="middle" class="head">MMA tile i+1</text>
+  <rect x="1130" y="400" width="190" height="70" rx="12" fill="#2563eb"/><text x="1225" y="442" text-anchor="middle" class="head">MMA i+2</text>
+
+  <rect x="65" y="540" width="1270" height="225" rx="20" fill="#fff" stroke="#cbd5e1"/>
+  <text x="95" y="580" class="note">Two warp-specialization mechanisms coexist in Triton 3.6</text>
+  <rect x="100" y="620" width="500" height="100" rx="15" fill="#ea580c"/>
+  <text x="350" y="658" text-anchor="middle" class="head">Hopper explicit warp specialization</text><text x="350" y="686" text-anchor="middle" class="small">attribute-driven loop partitioning; narrow gating</text>
+  <rect x="800" y="620" width="500" height="100" rx="15" fill="#16a34a"/>
+  <text x="1050" y="658" text-anchor="middle" class="head">generic automatic warp specialization</text><text x="1050" y="686" text-anchor="middle" class="small">partition scheduling + ttg.warp_specialize; SM100+ path</text>
+  <text x="95" y="808" class="note">Interview invariant: overlap is legal only after dependence, storage lifetime, synchronization, and resource costs are modeled together.</text>
+</svg>
